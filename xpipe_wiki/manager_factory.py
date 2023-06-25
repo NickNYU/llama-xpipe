@@ -9,20 +9,22 @@ class XPipeRobotRevision(enum.Enum):
     SIMPLE_OPENAI_VERSION_0 = 1
 
 
-CAPABLE = dict()
-"""
-CAPABLE: Dict[XPipeRobotRevision, XPipeWikiRobotManager] = {XPipeRobotRevision.SIMPLE_OPENAI_VERSION_0: XPipeWikiRobotManager()}
-"""
+
+
 
 
 class XPipeRobotManagerFactory:
+    """
+    CAPABLE: Dict[XPipeRobotRevision, XPipeWikiRobotManager] = {XPipeRobotRevision.SIMPLE_OPENAI_VERSION_0: XPipeWikiRobotManager()}
+    """
+    CAPABLE = dict()
     @classmethod
     def get_or_create(cls, revision: XPipeRobotRevision) -> XPipeWikiRobotManager:
-        if CAPABLE.get(revision) is not None:
-            return CAPABLE[revision]
+        if cls.CAPABLE.get(revision) is not None:
+            return cls.CAPABLE[revision]
         if revision == XPipeRobotRevision.SIMPLE_OPENAI_VERSION_0:
             manager = cls.create_simple_openai_version_0()
-        CAPABLE[revision] = manager
+        cls.CAPABLE[revision] = manager
         return manager
 
     @classmethod
@@ -48,3 +50,4 @@ class XPipeRobotManagerFactory:
         LifecycleHelper.initialize_if_possible(robot_manager)
         LifecycleHelper.start_if_possible(robot_manager)
         return robot_manager
+

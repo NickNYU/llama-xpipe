@@ -24,16 +24,18 @@ class BaseLangChainManager(ABC):
 class LangChainAzureManager(BaseLangChainManager):
     def __init__(self) -> None:
         super().__init__()
-
-    # Override
-    def get_embedding(self) -> LCEmbeddings:
-        return OpenAIEmbeddings(client=None, chunk_size=1)
-
-    # Override
-    def get_llm(self) -> BaseLanguageModel:
-        return AzureOpenAI(
+        self.embedding = OpenAIEmbeddings(client=None, chunk_size=1)
+        self.llm = AzureOpenAI(
             deployment_name="text-davinci-003",
             # model_name="text-davinci-003",
             model="text-davinci-003",
             client=None,
         )
+
+    # Override
+    def get_embedding(self) -> LCEmbeddings:
+        return self.embedding
+
+    # Override
+    def get_llm(self) -> BaseLanguageModel:
+        return self.llm

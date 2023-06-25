@@ -36,6 +36,7 @@ class XPipeWikiRobotManager(Lifecycle):
 class AzureXPipeWikiRobotManager(XPipeWikiRobotManager):
     service_context_manager: ServiceContextManager
     storage_context_manager: StorageContextManager
+    query_engine: BaseQueryEngine
 
     def __init__(
         self,
@@ -47,13 +48,7 @@ class AzureXPipeWikiRobotManager(XPipeWikiRobotManager):
         self.storage_context_manager = storage_context_manager
 
     def get_robot(self) -> XPipeWikiRobot:
-        index = load_index_from_storage(
-            storage_context=self.storage_context_manager.get_storage_context()
-        )
-        query_engine = index.as_query_engine(
-            service_context=self.service_context_manager.get_service_context()
-        )
-        return AzureOpenAIXPipeWikiRobot(query_engine)
+        return AzureOpenAIXPipeWikiRobot(self.query_engine)
 
     def do_init(self) -> None:
         LifecycleHelper.initialize_if_possible(self.service_context_manager)
@@ -62,6 +57,12 @@ class AzureXPipeWikiRobotManager(XPipeWikiRobotManager):
     def do_start(self) -> None:
         LifecycleHelper.start_if_possible(self.service_context_manager)
         LifecycleHelper.start_if_possible(self.storage_context_manager)
+        index = load_index_from_storage(
+            storage_context=self.storage_context_manager.get_storage_context()
+        )
+        self.query_engine = index.as_query_engine(
+            service_context=self.service_context_manager.get_service_context()
+        )
 
     def do_stop(self) -> None:
         LifecycleHelper.stop_if_possible(self.storage_context_manager)
