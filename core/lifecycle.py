@@ -37,7 +37,6 @@ class LifecycleAware(ABC):
         """
         self.state = state
 
-    @property
     def get_lifecycle_state(self) -> "LifecycleState":
         return self.state
 
@@ -113,7 +112,7 @@ class LifecycleController(ABC):
 
     def can_start(self, phase: Optional[LifecyclePhase]) -> bool:
         return phase is not None and (
-            phase == LifecyclePhase.INITIALIZED or phase == LifecyclePhase.STOPPED
+                phase == LifecyclePhase.INITIALIZED or phase == LifecyclePhase.STOPPED
         )
 
     def can_stop(self, phase: Optional[LifecyclePhase]) -> bool:
@@ -121,7 +120,7 @@ class LifecycleController(ABC):
 
     def can_dispose(self, phase: Optional[LifecyclePhase]) -> bool:
         return phase is not None and (
-            phase == LifecyclePhase.INITIALIZED or phase == LifecyclePhase.STOPPED
+                phase == LifecyclePhase.INITIALIZED or phase == LifecyclePhase.STOPPED
         )
 
 

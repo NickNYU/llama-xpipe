@@ -1,7 +1,6 @@
-llama_index
+llama_index>=0.6.3
 llama_hub
-langchain
-dotenv
+
 ruff
 black
 mypy
