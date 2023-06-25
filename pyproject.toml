@@ -1,7 +1,7 @@
 [tool.mypy]
 ignore_missing_imports = "True"
 disallow_untyped_defs = "True"
-exclude = ["notebooks", "build", "examples", "docs", "dataset", "app.py", "github_retriever.py"]
+exclude = ["notebooks", "build", "examples", "docs", "dataset", "github_retriever.py"]
 
 [tool.ruff]
 exclude = [
@@ -14,6 +14,5 @@ exclude = [
     "notebooks",
     "docs",
     "dataset",
-    "app.py",
     "github_retriever.py"
 ]

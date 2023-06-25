@@ -8,7 +8,7 @@ format:
 lint:
 	mypy .
 	black . --check
-	ruff check .
+	ruff check . --fix
 
 test:
 	pytest tests
