@@ -7,7 +7,6 @@ logging.basicConfig()
 
 
 class SubLifecycle(Lifecycle):
-
     def __init__(self):
         super().__init__()
         self.init_counter = 0

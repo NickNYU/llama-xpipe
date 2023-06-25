@@ -15,11 +15,14 @@ import sys
 
 
 load_dotenv()
-logging.basicConfig(stream=sys.stdout, level=logging.DEBUG) # logging.DEBUG for more verbose output
+logging.basicConfig(
+    stream=sys.stdout, level=logging.DEBUG
+)  # logging.DEBUG for more verbose output
 logging.getLogger().addHandler(logging.StreamHandler(stream=sys.stdout))
 
+
 def main():
-    documents = SimpleDirectoryReader('./data').load_data()
+    documents = SimpleDirectoryReader("./data").load_data()
 
     # index = VectorStoreIndex.from_documents(documents)
 
@@ -28,15 +31,19 @@ def main():
     # index = VectorStoreIndex(nodes)
 
     # define embedding
-    embedding = LangchainEmbedding(OpenAIEmbeddings(chunk_size = 1))
+    embedding = LangchainEmbedding(OpenAIEmbeddings(chunk_size=1))
     # define LLM
-    llm_predictor = LLMPredictor(llm=AzureOpenAI(
-        engine="text-davinci-003",
-        model_name="text-davinci-003",
-    ))
+    llm_predictor = LLMPredictor(
+        llm=AzureOpenAI(
+            engine="text-davinci-003",
+            model_name="text-davinci-003",
+        )
+    )
 
     # configure service context
-    service_context = ServiceContext.from_defaults(llm_predictor=llm_predictor, embed_model=embedding)
+    service_context = ServiceContext.from_defaults(
+        llm_predictor=llm_predictor, embed_model=embedding
+    )
 
     # build index
     index = VectorStoreIndex.from_documents(
@@ -46,19 +53,18 @@ def main():
 
     index.storage_context.persist(persist_dir="./dataset")
     storage_context = StorageContext.from_defaults(persist_dir="./dataset")
-    index = load_index_from_storage(storage_context=storage_context, service_context=service_context)
+    index = load_index_from_storage(
+        storage_context=storage_context, service_context=service_context
+    )
 
     # index.vector_store.persist("./dataset")
     # query with embed_model specified
     query_engine = index.as_query_engine(
-        retriever_mode="embedding",
-        verbose=True,
-        service_context=service_context
+        retriever_mode="embedding", verbose=True, service_context=service_context
     )
     response = query_engine.query("请帮忙推荐一杯咖啡给我，我喜欢咖啡因")
     print(response)
 
 
-
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

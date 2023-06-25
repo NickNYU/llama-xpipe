@@ -2,7 +2,6 @@ from core.lifecycle import Lifecycle
 
 
 class VectorStorageManager(Lifecycle):
-
     def __init__(self):
         super().__init__()
 

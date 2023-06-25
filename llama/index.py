@@ -3,7 +3,6 @@ from llama.context import ServiceContextManager
 
 
 class IndexManager(Lifecycle):
-
     def __init__(self, context_manager: [ServiceContextManager]):
         super().__init__()
         self.index = None

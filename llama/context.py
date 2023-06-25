@@ -5,7 +5,6 @@ from langchain.manager import LangChainManager
 
 
 class ServiceContextManager(Lifecycle):
-
     def __init__(self, manager: [LangChainManager]):
         super().__init__()
         self.manager = manager
@@ -13,7 +12,9 @@ class ServiceContextManager(Lifecycle):
 
     def get_service_context(self) -> ServiceContext:
         if self.lifecycle_state.is_started():
-            raise Exception("incorrect lifecycle state: {}".format(self.get_lifecycle_state()))
+            raise Exception(
+                "incorrect lifecycle state: {}".format(self.get_lifecycle_state())
+            )
         return self.service_context
 
     def do_init(self):
@@ -22,7 +23,9 @@ class ServiceContextManager(Lifecycle):
         # define LLM
         llm_predictor = LLMPredictor(llm=self.manager.get_llm())
         # configure service context
-        self.service_context = ServiceContext.from_defaults(llm_predictor=llm_predictor, embed_model=embedding)
+        self.service_context = ServiceContext.from_defaults(
+            llm_predictor=llm_predictor, embed_model=embedding
+        )
 
     def do_start(self):
         pass
@@ -35,8 +38,7 @@ class ServiceContextManager(Lifecycle):
 
 
 class StorageContextManager(Lifecycle):
-
-    def __init__(self, dataset_path: [str] = './dataset'):
+    def __init__(self, dataset_path: [str] = "./dataset"):
         super().__init__()
         self.dataset_path = dataset_path
 

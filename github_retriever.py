@@ -8,17 +8,23 @@ from llama_index import StorageContext, load_index_from_storage
 from dotenv import load_dotenv
 import os
 import pickle
+
+
 def main():
     # define embedding
     embedding = LangchainEmbedding(OpenAIEmbeddings(chunk_size=1))
     # define LLM
-    llm_predictor = LLMPredictor(llm=AzureOpenAI(
-        engine="text-davinci-003",
-        model_name="text-davinci-003",
-    ))
+    llm_predictor = LLMPredictor(
+        llm=AzureOpenAI(
+            engine="text-davinci-003",
+            model_name="text-davinci-003",
+        )
+    )
 
     # configure service context
-    service_context = ServiceContext.from_defaults(llm_predictor=llm_predictor, embed_model=embedding)
+    service_context = ServiceContext.from_defaults(
+        llm_predictor=llm_predictor, embed_model=embedding
+    )
     download_loader("GithubRepositoryReader")
     docs = None
     if os.path.exists("docs/docs.pkl"):
@@ -31,7 +37,10 @@ def main():
             github_client,
             owner="ctripcorp",
             repo="x-pipe",
-            filter_directories=([".", "doc"], GithubRepositoryReader.FilterType.INCLUDE),
+            filter_directories=(
+                [".", "doc"],
+                GithubRepositoryReader.FilterType.INCLUDE,
+            ),
             filter_file_extensions=([".md"], GithubRepositoryReader.FilterType.INCLUDE),
             verbose=True,
             concurrent_requests=10,
@@ -49,7 +58,6 @@ def main():
     print(response)
 
 
-
-if __name__ == '__main__':
+if __name__ == "__main__":
     load_dotenv()
     main()

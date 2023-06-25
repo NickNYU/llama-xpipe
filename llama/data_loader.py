@@ -17,12 +17,16 @@ class WikiLoader(ABC):
 
 
 class GithubLoader(WikiLoader, Lifecycle):
-
-    def __init__(self, github_owner: Optional[str] = None,
-                 repo: Optional[str] = None,
-                 dirs: Optional[Sequence[str]] = None):
+    def __init__(
+        self,
+        github_owner: Optional[str] = None,
+        repo: Optional[str] = None,
+        dirs: Optional[Sequence[str]] = None,
+    ):
         super().__init__()
-        self.owner = github_owner if github_owner is not None else os.environ["GITHUB_OWNER"]
+        self.owner = (
+            github_owner if github_owner is not None else os.environ["GITHUB_OWNER"]
+        )
         self.repo = repo if repo is not None else os.environ["GITHUB_REPO"]
         self.dirs = dirs if dirs is not None else [".", "doc"]
 

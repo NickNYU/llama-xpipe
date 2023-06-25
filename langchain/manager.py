@@ -22,7 +22,6 @@ class LangChainManager(Lifecycle, ABC):
 
 
 class LangChainAzureManager(LangChainManager):
-
     def __init__(self):
         super().__init__()
 

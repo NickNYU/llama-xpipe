@@ -6,7 +6,6 @@ from core import logger_factory
 
 
 class Initializable(ABC):
-
     @abstractmethod
     def initialize(self) -> None:
         pass
@@ -19,21 +18,18 @@ class Startable(ABC):
 
 
 class Stoppable(ABC):
-
     @abstractmethod
     def stop(self) -> None:
         pass
 
 
 class Disposable(ABC):
-
     @abstractmethod
     def dispose(self) -> None:
         pass
 
 
 class LifecycleAware(ABC):
-
     def __init__(self, state):
         self.state = state
 
@@ -42,7 +38,6 @@ class LifecycleAware(ABC):
 
 
 class Lifecycle(Initializable, Startable, Stoppable, Disposable, LifecycleAware, ABC):
-
     def __init__(self):
         self.logger = logger_factory.get_logger(self.__class__.__name__)
         self.lifecycle_state = LifecycleState(lifecycle=self)
@@ -108,27 +103,27 @@ class LifecyclePhase(enum.Enum):
 
 
 class LifecycleController(ABC):
-
     def can_initialize(self, phase: [LifecyclePhase]) -> bool:
         return phase is None or phase == LifecyclePhase.DISPOSED
 
     def can_start(self, phase: [LifecyclePhase]) -> bool:
         return phase is not None and (
-                phase == LifecyclePhase.INITIALIZED or phase == LifecyclePhase.STOPPED)
+            phase == LifecyclePhase.INITIALIZED or phase == LifecyclePhase.STOPPED
+        )
 
     def can_stop(self, phase: [LifecyclePhase]) -> bool:
         return phase is not None and phase == LifecyclePhase.STARTED
 
     def can_dispose(self, phase: [LifecyclePhase]) -> bool:
         return phase is not None and (
-                phase == LifecyclePhase.INITIALIZED or phase == LifecyclePhase.STOPPED)
+            phase == LifecyclePhase.INITIALIZED or phase == LifecyclePhase.STOPPED
+        )
 
 
 LS = TypeVar("LS", bound=Lifecycle)
 
 
 class LifecycleState(LifecycleController, ABC):
-
     def __init__(self, lifecycle: [LS]):
         self.phase = None
         self.prev_phase = None
@@ -164,7 +159,11 @@ class LifecycleState(LifecycleController, ABC):
 
     def set_phase(self, phase: [LifecyclePhase]) -> None:
         prev = "None" if self.phase is None else self.phase.name
-        self.logger.info("[setPhaseName][{}]{} --> {}".format(self.lifecycle.__class__.__name__, prev, phase.name))
+        self.logger.info(
+            "[setPhaseName][{}]{} --> {}".format(
+                self.lifecycle.__class__.__name__, prev, phase.name
+            )
+        )
         self.phase = phase
 
     def rollback(self, err: [Exception]) -> None:
