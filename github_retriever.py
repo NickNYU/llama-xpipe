@@ -10,7 +10,7 @@ import os
 import pickle
 
 
-def main():
+def main() -> None:
     # define embedding
     embedding = LangchainEmbedding(OpenAIEmbeddings(chunk_size=1))
     # define LLM

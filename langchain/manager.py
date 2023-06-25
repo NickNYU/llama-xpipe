@@ -8,8 +8,8 @@ from langchain.base_language import BaseLanguageModel
 from core.lifecycle import Lifecycle
 
 
-class LangChainManager(Lifecycle, ABC):
-    def __init__(self):
+class BaseLangChainManager(Lifecycle, ABC):
+    def __init__(self) -> None:
         super().__init__()
 
     @abstractmethod
@@ -21,17 +21,19 @@ class LangChainManager(Lifecycle, ABC):
         pass
 
 
-class LangChainAzureManager(LangChainManager):
-    def __init__(self):
+class LangChainAzureManager(BaseLangChainManager):
+    def __init__(self) -> None:
         super().__init__()
 
     # Override
     def get_embedding(self) -> LCEmbeddings:
-        return OpenAIEmbeddings(chunk_size=1)
+        return OpenAIEmbeddings(client=None, chunk_size=1)
 
     # Override
     def get_llm(self) -> BaseLanguageModel:
         return AzureOpenAI(
-            engine="text-davinci-003",
-            model_name="text-davinci-003",
+            deployment_name="text-davinci-003",
+            # model_name="text-davinci-003",
+            model="text-davinci-003",
+            client=None,
         )

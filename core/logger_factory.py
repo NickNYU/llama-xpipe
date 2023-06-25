@@ -3,7 +3,7 @@ from logging import handlers
 from typing import Optional
 
 
-def get_logger(name: [str], file_name: Optional[str] = None) -> logging.Logger:
+def get_logger(name: str, file_name: Optional[str] = None) -> logging.Logger:
     logger = logging.getLogger(name)
     if file_name is None:
         file_name = "app-default.log"

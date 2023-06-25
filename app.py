@@ -1,5 +1,4 @@
 import os
-from dotenv import load_dotenv
 from llama_index import SimpleDirectoryReader
 from llama_index.node_parser import SimpleNodeParser
 from llama_index.data_structs.node import Node, DocumentRelationship
@@ -14,14 +13,13 @@ import logging
 import sys
 
 
-load_dotenv()
 logging.basicConfig(
     stream=sys.stdout, level=logging.DEBUG
 )  # logging.DEBUG for more verbose output
 logging.getLogger().addHandler(logging.StreamHandler(stream=sys.stdout))
 
 
-def main():
+def main() -> None:
     documents = SimpleDirectoryReader("./data").load_data()
 
     # index = VectorStoreIndex.from_documents(documents)
@@ -31,12 +29,13 @@ def main():
     # index = VectorStoreIndex(nodes)
 
     # define embedding
-    embedding = LangchainEmbedding(OpenAIEmbeddings(chunk_size=1))
+    embedding = LangchainEmbedding(OpenAIEmbeddings(client=None, chunk_size=1))
     # define LLM
     llm_predictor = LLMPredictor(
         llm=AzureOpenAI(
-            engine="text-davinci-003",
-            model_name="text-davinci-003",
+            client=None,
+            deployment_name="text-davinci-003",
+            model="text-davinci-003",
         )
     )
 

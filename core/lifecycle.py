@@ -1,6 +1,6 @@
 import enum
 from abc import ABC, abstractmethod
-from typing import TypeVar
+from typing import TypeVar, Optional
 
 from core import logger_factory
 
@@ -30,19 +30,24 @@ class Disposable(ABC):
 
 
 class LifecycleAware(ABC):
-    def __init__(self, state):
+    def __init__(self, state: "LifecycleState") -> None:
+        """
+        Args:
+            state(LifecycleState): lifecycle state
+        """
         self.state = state
 
-    def get_lifecycle_state(self):
+    @property
+    def get_lifecycle_state(self) -> "LifecycleState":
         return self.state
 
 
 class Lifecycle(Initializable, Startable, Stoppable, Disposable, LifecycleAware, ABC):
-    def __init__(self):
+    def __init__(self) -> None:
         self.logger = logger_factory.get_logger(self.__class__.__name__)
         self.lifecycle_state = LifecycleState(lifecycle=self)
 
-    def initialize(self):
+    def initialize(self) -> None:
         if not self.lifecycle_state.can_initialize(self.lifecycle_state.get_phase()):
             self.logger.warning("[{}]cannot initialize".format(self.__class__.__name__))
             return
@@ -50,7 +55,7 @@ class Lifecycle(Initializable, Startable, Stoppable, Disposable, LifecycleAware,
         self.do_init()
         self.lifecycle_state.set_phase(LifecyclePhase.INITIALIZED)
 
-    def start(self):
+    def start(self) -> None:
         if not self.lifecycle_state.can_start(self.lifecycle_state.get_phase()):
             self.logger.warning("[{}]cannot start".format(self.__class__.__name__))
             return
@@ -58,7 +63,7 @@ class Lifecycle(Initializable, Startable, Stoppable, Disposable, LifecycleAware,
         self.do_start()
         self.lifecycle_state.set_phase(LifecyclePhase.STARTED)
 
-    def stop(self):
+    def stop(self) -> None:
         if not self.lifecycle_state.can_stop(self.lifecycle_state.get_phase()):
             self.logger.warning("[{}]cannot stop".format(self.__class__.__name__))
             return
@@ -66,7 +71,7 @@ class Lifecycle(Initializable, Startable, Stoppable, Disposable, LifecycleAware,
         self.do_stop()
         self.lifecycle_state.set_phase(LifecyclePhase.STOPPED)
 
-    def dispose(self):
+    def dispose(self) -> None:
         if not self.lifecycle_state.can_dispose(self.lifecycle_state.get_phase()):
             self.logger.warning("[{}]cannot dispose".format(self.__class__.__name__))
             return
@@ -75,19 +80,19 @@ class Lifecycle(Initializable, Startable, Stoppable, Disposable, LifecycleAware,
         self.lifecycle_state.set_phase(LifecyclePhase.DISPOSED)
 
     @abstractmethod
-    def do_init(self):
+    def do_init(self) -> None:
         pass
 
     @abstractmethod
-    def do_start(self):
+    def do_start(self) -> None:
         pass
 
     @abstractmethod
-    def do_stop(self):
+    def do_stop(self) -> None:
         pass
 
     @abstractmethod
-    def do_dispose(self):
+    def do_dispose(self) -> None:
         pass
 
 
@@ -103,18 +108,18 @@ class LifecyclePhase(enum.Enum):
 
 
 class LifecycleController(ABC):
-    def can_initialize(self, phase: [LifecyclePhase]) -> bool:
+    def can_initialize(self, phase: Optional[LifecyclePhase]) -> bool:
         return phase is None or phase == LifecyclePhase.DISPOSED
 
-    def can_start(self, phase: [LifecyclePhase]) -> bool:
+    def can_start(self, phase: Optional[LifecyclePhase]) -> bool:
         return phase is not None and (
             phase == LifecyclePhase.INITIALIZED or phase == LifecyclePhase.STOPPED
         )
 
-    def can_stop(self, phase: [LifecyclePhase]) -> bool:
+    def can_stop(self, phase: Optional[LifecyclePhase]) -> bool:
         return phase is not None and phase == LifecyclePhase.STARTED
 
-    def can_dispose(self, phase: [LifecyclePhase]) -> bool:
+    def can_dispose(self, phase: Optional[LifecyclePhase]) -> bool:
         return phase is not None and (
             phase == LifecyclePhase.INITIALIZED or phase == LifecyclePhase.STOPPED
         )
@@ -124,7 +129,9 @@ LS = TypeVar("LS", bound=Lifecycle)
 
 
 class LifecycleState(LifecycleController, ABC):
-    def __init__(self, lifecycle: [LS]):
+    phase: Optional[LifecyclePhase]
+
+    def __init__(self, lifecycle: LS) -> None:
         self.phase = None
         self.prev_phase = None
         self.lifecycle = lifecycle
@@ -154,18 +161,25 @@ class LifecycleState(LifecycleController, ABC):
     def is_disposed(self) -> bool:
         return self.phase == LifecyclePhase.DISPOSED
 
-    def get_phase(self) -> LifecyclePhase:
+    def get_phase(self) -> Optional[LifecyclePhase]:
         return self.phase
 
-    def set_phase(self, phase: [LifecyclePhase]) -> None:
-        prev = "None" if self.phase is None else self.phase.name
+    def set_phase(self, phase: Optional[LifecyclePhase]) -> None:
+        prev = "None"
+        if self.phase is not None:
+            prev = self.phase.name
+        current = "None"
+        if phase is not None:
+            current = phase.name
         self.logger.info(
             "[setPhaseName][{}]{} --> {}".format(
-                self.lifecycle.__class__.__name__, prev, phase.name
+                self.lifecycle.__class__.__name__,
+                prev,
+                current,
             )
         )
         self.phase = phase
 
-    def rollback(self, err: [Exception]) -> None:
+    def rollback(self, err: Exception) -> None:
         self.phase = self.prev_phase
         self.prev_phase = None
