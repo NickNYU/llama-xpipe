@@ -16,10 +16,10 @@ class WikiLoader(ABC):
 
 class GithubLoader(WikiLoader):
     def __init__(
-            self,
-            github_owner: Optional[str] = None,
-            repo: Optional[str] = None,
-            dirs: Optional[Sequence[str]] = None,
+        self,
+        github_owner: Optional[str] = None,
+        repo: Optional[str] = None,
+        dirs: Optional[Sequence[str]] = None,
     ):
         super().__init__()
         self.owner = (

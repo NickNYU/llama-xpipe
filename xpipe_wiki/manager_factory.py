@@ -10,6 +10,9 @@ class XPipeRobotRevision(enum.Enum):
 
 
 CAPABLE = dict()
+"""
+CAPABLE: Dict[XPipeRobotRevision, XPipeWikiRobotManager] = {XPipeRobotRevision.SIMPLE_OPENAI_VERSION_0: XPipeWikiRobotManager()}
+"""
 
 
 class XPipeRobotManagerFactory:
