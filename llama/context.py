@@ -5,10 +5,10 @@ from llama_index import StorageContext
 
 from core.lifecycle import Lifecycle
 from langchain_manager.manager import BaseLangChainManager
-from typing import List
 
 
 class ServiceContextManager(Lifecycle, ABC):
+
     @abstractmethod
     def get_service_context(self) -> ServiceContext:
         pass
@@ -23,10 +23,6 @@ class AzureServiceContextManager(ServiceContextManager):
         self.lc_manager = lc_manager
 
     def get_service_context(self) -> ServiceContext:
-        if self.lifecycle_state.is_started():
-            raise KeyError(
-                "incorrect lifecycle state: {}".format(self.lifecycle_state.phase)
-            )
         if self.service_context is None:
             raise ValueError(
                 "service context is not ready, check for lifecycle statement"
@@ -44,33 +40,23 @@ class AzureServiceContextManager(ServiceContextManager):
         )
 
     def do_start(self) -> None:
-        self.logger.info(
-            "[do_start][embedding] last used usage: %d",
-            self.service_context.embed_model.total_tokens_used,
-        )
-        self.logger.info(
-            "[do_start][predict] last used usage: %d",
-            self.service_context.llm_predictor.total_tokens_used,
-        )
+        self.logger.info("[do_start][embedding] last used usage: %d",
+                         self.service_context.embed_model.total_tokens_used)
+        self.logger.info("[do_start][predict] last used usage: %d",
+                         self.service_context.llm_predictor.total_tokens_used)
 
     def do_stop(self) -> None:
-        self.logger.info(
-            "[do_stop][embedding] last used usage: %d",
-            self.service_context.embed_model.total_tokens_used,
-        )
-        self.logger.info(
-            "[do_stop][predict] last used usage: %d",
-            self.service_context.llm_predictor.total_tokens_used,
-        )
+        self.logger.info("[do_stop][embedding] last used usage: %d",
+                         self.service_context.embed_model.total_tokens_used)
+        self.logger.info("[do_stop][predict] last used usage: %d",
+                         self.service_context.llm_predictor.total_tokens_used)
 
     def do_dispose(self) -> None:
-        self.logger.info(
-            "[do_dispose] total used token: %d",
-            self.service_context.llm_predictor.total_tokens_used,
-        )
+        self.logger.info("[do_dispose] total used token: %d", self.service_context.llm_predictor.total_tokens_used)
 
 
 class StorageContextManager(Lifecycle, ABC):
+
     @abstractmethod
     def get_storage_context(self) -> StorageContext:
         pass
@@ -79,11 +65,9 @@ class StorageContextManager(Lifecycle, ABC):
 class LocalStorageContextManager(StorageContextManager):
     storage_context: StorageContext
 
-    def __init__(
-        self,
-        service_context_manager: ServiceContextManager,
-        dataset_path: str = "./dataset",
-    ) -> None:
+    def __init__(self,
+                 dataset_path: str = "./dataset",
+                 service_context_manager: ServiceContextManager = None) -> None:
         super().__init__()
         self.dataset_path = dataset_path
         self.service_context_manager = service_context_manager
@@ -93,35 +77,31 @@ class LocalStorageContextManager(StorageContextManager):
 
     def do_init(self) -> None:
         from llama.utils import is_local_storage_files_ready
-
         if is_local_storage_files_ready(self.dataset_path):
-            self.storage_context = StorageContext.from_defaults(
-                persist_dir=self.dataset_path
-            )
+            self.storage_context = StorageContext.from_defaults(persist_dir=self.dataset_path)
         else:
             docs = self._download()
             self._indexing(docs)
 
     def do_start(self) -> None:
-        self.logger.info("[do_start]%", **self.storage_context.to_dict())
+        # self.logger.info("[do_start]%", **self.storage_context.to_dict())
+        pass
 
     def do_stop(self) -> None:
-        self.logger.info("[do_stop]%", **self.storage_context.to_dict())
+        # self.logger.info("[do_stop]%", **self.storage_context.to_dict())
+        pass
 
     def do_dispose(self) -> None:
         self.storage_context.persist(self.dataset_path)
 
-    def _download(self) -> List[Document]:
+    def _download(self) -> [Document]:
         from llama.data_loader import GithubLoader
-
         loader = GithubLoader()
         return loader.load()
 
-    def _indexing(self, docs: List[Document]) -> None:
+    def _indexing(self, docs: [Document]):
         from llama_index import GPTVectorStoreIndex
-
-        index = GPTVectorStoreIndex.from_documents(
-            docs, service_context=self.service_context_manager.get_service_context()
-        )
+        index = GPTVectorStoreIndex.from_documents(docs,
+                                                   service_context=self.service_context_manager.get_service_context())
         index.storage_context.persist(persist_dir=self.dataset_path)
         self.storage_context = index.storage_context

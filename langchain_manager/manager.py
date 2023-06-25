@@ -1,9 +1,9 @@
 from abc import abstractmethod, ABC
 
-from langchain_manager.base_language import BaseLanguageModel
-from langchain_manager.embeddings.base import Embeddings as LCEmbeddings
-from langchain_manager.embeddings.openai import OpenAIEmbeddings
-from langchain_manager.llms import AzureOpenAI
+from langchain.base_language import BaseLanguageModel
+from langchain.embeddings.base import Embeddings as LCEmbeddings
+from langchain.embeddings.openai import OpenAIEmbeddings
+from langchain.llms import AzureOpenAI
 
 from core.lifecycle import Lifecycle
 
