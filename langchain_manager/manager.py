@@ -8,7 +8,7 @@ from langchain_manager.llms import AzureOpenAI
 from core.lifecycle import Lifecycle
 
 
-class BaseLangChainManager(Lifecycle, ABC):
+class BaseLangChainManager(ABC):
     def __init__(self) -> None:
         super().__init__()
 

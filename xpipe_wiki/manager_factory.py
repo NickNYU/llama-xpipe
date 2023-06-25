@@ -9,11 +9,10 @@ class XPipeRobotRevision(enum.Enum):
     SIMPLE_OPENAI_VERSION_0 = 1
 
 
-CAPABLE = dict[XPipeRobotRevision, XPipeWikiRobotManager]
+CAPABLE = dict()
 
 
 class XPipeRobotManagerFactory:
-
     @classmethod
     def get_or_create(cls, revision: XPipeRobotRevision) -> XPipeWikiRobotManager:
         if CAPABLE.get(revision) is not None:
@@ -25,18 +24,24 @@ class XPipeRobotManagerFactory:
 
     @classmethod
     def create_simple_openai_version_0(cls) -> AzureXPipeWikiRobotManager:
-
         from llama.context import AzureServiceContextManager
         from langchain_manager.manager import LangChainAzureManager
-        service_context_manager = AzureServiceContextManager(lc_manager=LangChainAzureManager())
+
+        service_context_manager = AzureServiceContextManager(
+            lc_manager=LangChainAzureManager()
+        )
 
         from llama.context import LocalStorageContextManager
-        dataset_path = os.getenv("XPIPE_WIKI_DATASET_PATH", "./dataset")
-        storage_context_manager = LocalStorageContextManager(dataset_path=dataset_path,
-                                                             service_context_manager=service_context_manager)
 
-        robot_manager = AzureXPipeWikiRobotManager(service_context_manager=service_context_manager,
-                                                   storage_context_manager=storage_context_manager)
+        dataset_path = os.getenv("XPIPE_WIKI_DATASET_PATH", "./dataset")
+        storage_context_manager = LocalStorageContextManager(
+            dataset_path=dataset_path, service_context_manager=service_context_manager
+        )
+
+        robot_manager = AzureXPipeWikiRobotManager(
+            service_context_manager=service_context_manager,
+            storage_context_manager=storage_context_manager,
+        )
         LifecycleHelper.initialize_if_possible(robot_manager)
         LifecycleHelper.start_if_possible(robot_manager)
         return robot_manager

@@ -1,7 +1,7 @@
 import os
 import pickle
 from abc import abstractmethod, ABC
-from typing import Optional, Sequence
+from typing import Optional, Sequence, List
 
 from llama_hub.github_repo import GithubRepositoryReader, GithubClient
 from llama_index import download_loader
@@ -10,16 +10,16 @@ from llama_index.readers.schema.base import Document
 
 class WikiLoader(ABC):
     @abstractmethod
-    def load(self) -> [Document]:
+    def load(self) -> List[Document]:
         pass
 
 
 class GithubLoader(WikiLoader):
     def __init__(
-            self,
-            github_owner: Optional[str] = None,
-            repo: Optional[str] = None,
-            dirs: Optional[Sequence[str]] = None,
+        self,
+        github_owner: Optional[str] = None,
+        repo: Optional[str] = None,
+        dirs: Optional[Sequence[str]] = None,
     ):
         super().__init__()
         self.owner = (
@@ -28,7 +28,7 @@ class GithubLoader(WikiLoader):
         self.repo = repo if repo is not None else os.environ["GITHUB_REPO"]
         self.dirs = dirs if dirs is not None else [".", "doc"]
 
-    def load(self) -> [Document]:
+    def load(self) -> List[Document]:
         download_loader("GithubRepositoryReader")
         docs = None
         if os.path.exists("docs/docs.pkl"):

@@ -16,29 +16,43 @@ class XPipeWikiRobot(ABC):
         pass
 
 
-@dataclasses
 class AzureOpenAIXPipeWikiRobot(XPipeWikiRobot):
     query_engine: BaseQueryEngine
+
+    def __init__(self, query_engine: BaseQueryEngine) -> None:
+        super().__init__()
+        self.query_engine = query_engine
 
     def ask(self, question: str) -> Any:
         return self.query_engine.query(question)
 
 
 class XPipeWikiRobotManager(Lifecycle):
-
     @abstractmethod
     def get_robot(self) -> XPipeWikiRobot:
         pass
 
 
-@dataclasses
 class AzureXPipeWikiRobotManager(XPipeWikiRobotManager):
     service_context_manager: ServiceContextManager
     storage_context_manager: StorageContextManager
 
+    def __init__(
+        self,
+        service_context_manager: ServiceContextManager,
+        storage_context_manager: StorageContextManager,
+    ) -> None:
+        super().__init__()
+        self.service_context_manager = service_context_manager
+        self.storage_context_manager = storage_context_manager
+
     def get_robot(self) -> XPipeWikiRobot:
-        index = load_index_from_storage(storage_context=self.storage_context_manager.get_storage_context())
-        query_engine = index.as_query_engine(service_context=self.service_context_manager.get_service_context())
+        index = load_index_from_storage(
+            storage_context=self.storage_context_manager.get_storage_context()
+        )
+        query_engine = index.as_query_engine(
+            service_context=self.service_context_manager.get_service_context()
+        )
         return AzureOpenAIXPipeWikiRobot(query_engine)
 
     def do_init(self) -> None:

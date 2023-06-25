@@ -28,7 +28,9 @@ with st.sidebar:
 
 def main() -> None:
     st.header("X-Pipe Wiki 机器人 💬")
-    robot_manager = XPipeRobotManagerFactory.get_or_create(XPipeRobotRevision.SIMPLE_OPENAI_VERSION_0)
+    robot_manager = XPipeRobotManagerFactory.get_or_create(
+        XPipeRobotRevision.SIMPLE_OPENAI_VERSION_0
+    )
     robot = robot_manager.get_robot()
     query = st.text_input("X-Pipe Wiki 问题:")
     if query:
