@@ -2,11 +2,12 @@ import logging
 import sys
 
 import streamlit as st
+from dotenv import load_dotenv
 
 from xpipe_wiki.manager_factory import XPipeRobotManagerFactory, XPipeRobotRevision
 
 logging.basicConfig(
-    stream=sys.stdout, level=logging.DEBUG
+    stream=sys.stdout, level=logging.INFO
 )  # logging.DEBUG for more verbose output
 logging.getLogger().addHandler(logging.StreamHandler(stream=sys.stdout))
 
@@ -29,7 +30,7 @@ with st.sidebar:
 def main() -> None:
     st.header("X-Pipe Wiki 机器人 💬")
     robot_manager = XPipeRobotManagerFactory.get_or_create(
-        XPipeRobotRevision.SIMPLE_OPENAI_VERSION_0
+        XPipeRobotRevision.HUGGINGFACE_VERSION_0
     )
     robot = robot_manager.get_robot()
     query = st.text_input("X-Pipe Wiki 问题:")
@@ -39,4 +40,5 @@ def main() -> None:
 
 
 if __name__ == "__main__":
+    load_dotenv()
     main()

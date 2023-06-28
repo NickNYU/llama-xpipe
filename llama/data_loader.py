@@ -51,7 +51,8 @@ class GithubLoader(WikiLoader):
             verbose=True,
             concurrent_requests=10,
         )
-
+        os.environ["http_proxy"] = "http://127.0.0.1:7890"
+        os.environ["https_proxy"] = "http://127.0.0.1:7890"
         docs = loader.load_data(branch="master")
 
         with open("docs/docs.pkl", "wb") as f:

@@ -1,6 +1,7 @@
 llama_index>=0.6.3
 llama_hub
-
+streamlit
 ruff
 black
 mypy
+accelerate

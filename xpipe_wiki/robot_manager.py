@@ -3,11 +3,10 @@ from typing import Any
 
 from llama_index import load_index_from_storage
 from llama_index.indices.query.base import BaseQueryEngine
-from pydantic import dataclasses
 
 from core.helper import LifecycleHelper
 from core.lifecycle import Lifecycle
-from llama.context import ServiceContextManager, StorageContextManager
+from llama.service_context import ServiceContextManager, StorageContextManager
 
 
 class XPipeWikiRobot(ABC):
@@ -24,7 +23,7 @@ class AzureOpenAIXPipeWikiRobot(XPipeWikiRobot):
         self.query_engine = query_engine
 
     def ask(self, question: str) -> Any:
-        return self.query_engine.query(question)
+        return self.query_engine.query(question).response
 
 
 class XPipeWikiRobotManager(Lifecycle):
@@ -58,7 +57,8 @@ class AzureXPipeWikiRobotManager(XPipeWikiRobotManager):
         LifecycleHelper.start_if_possible(self.service_context_manager)
         LifecycleHelper.start_if_possible(self.storage_context_manager)
         index = load_index_from_storage(
-            storage_context=self.storage_context_manager.get_storage_context()
+            storage_context=self.storage_context_manager.get_storage_context(),
+            service_context=self.service_context_manager.get_service_context(),
         )
         self.query_engine = index.as_query_engine(
             service_context=self.service_context_manager.get_service_context()
