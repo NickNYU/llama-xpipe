@@ -9,9 +9,9 @@ from xpipe_wiki.manager_factory import XPipeRobotManagerFactory, XPipeRobotRevis
 logging.basicConfig(
     stream=sys.stdout, level=logging.INFO
 )  # logging.DEBUG for more verbose output
-logging.getLogger().addHandler(logging.StreamHandler(stream=sys.stdout))
+# logging.getLogger().addHandler(logging.StreamHandler(stream=sys.stdout))
 
-# Sidebar contents
+# # Sidebar contents
 with st.sidebar:
     st.title("🤗💬 LLM Chat App")
     st.markdown(
@@ -29,8 +29,9 @@ with st.sidebar:
 
 def main() -> None:
     st.header("X-Pipe Wiki 机器人 💬")
+
     robot_manager = XPipeRobotManagerFactory.get_or_create(
-        XPipeRobotRevision.HUGGINGFACE_VERSION_0
+        XPipeRobotRevision.SIMPLE_OPENAI_VERSION_0
     )
     robot = robot_manager.get_robot()
     query = st.text_input("X-Pipe Wiki 问题:")

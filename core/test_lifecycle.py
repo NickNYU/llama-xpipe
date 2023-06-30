@@ -1,9 +1,6 @@
-import logging
 from unittest import TestCase
 
 from core.lifecycle import Lifecycle
-
-logging.basicConfig()
 
 
 class SubLifecycle(Lifecycle):

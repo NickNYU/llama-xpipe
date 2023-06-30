@@ -42,7 +42,7 @@ class XPipeRobotManagerFactory:
         service_context_manager = AzureServiceContextManager(
             lc_manager=LangChainAzureManager()
         )
-        from llama.service_context import LocalStorageContextManager
+        from llama.storage_context import LocalStorageContextManager
 
         dataset_path = os.getenv("XPIPE_WIKI_DATASET_PATH", "./dataset")
         storage_context_manager = LocalStorageContextManager(
@@ -66,7 +66,7 @@ class XPipeRobotManagerFactory:
             lc_manager=LangChainAzureManager()
         )
 
-        from llama.service_context import LocalStorageContextManager
+        from llama.storage_context import LocalStorageContextManager
 
         dataset_path = os.getenv("XPIPE_WIKI_DATASET_PATH", "./dataset")
         storage_context_manager = LocalStorageContextManager(

@@ -7,3 +7,4 @@ mypy
 accelerate
 python-dotenv
 sentence_transformers
+wandb

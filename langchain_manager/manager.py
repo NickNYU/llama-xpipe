@@ -28,6 +28,11 @@ class LangChainAzureManager(BaseLangChainManager):
             # model_name="text-davinci-003",
             model="text-davinci-003",
             client=None,
+            # temperature set to 0.0(default 0.7) to get a certain answer from OpenAI,
+            # as a wiki robot we won't want to get flexible answers
+            temperature=0.0,
+            # GPT-3 default is 4096, however, openai.py default is 256
+            max_tokens=2048,
         )
 
     # Override

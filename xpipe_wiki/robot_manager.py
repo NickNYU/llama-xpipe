@@ -3,10 +3,12 @@ from typing import Any
 
 from llama_index import load_index_from_storage
 from llama_index.indices.query.base import BaseQueryEngine
+from llama_index.indices.response import ResponseMode
 
 from core.helper import LifecycleHelper
 from core.lifecycle import Lifecycle
-from llama.service_context import ServiceContextManager, StorageContextManager
+from llama.service_context import ServiceContextManager
+from llama.storage_context import StorageContextManager
 
 
 class XPipeWikiRobot(ABC):
@@ -23,7 +25,10 @@ class AzureOpenAIXPipeWikiRobot(XPipeWikiRobot):
         self.query_engine = query_engine
 
     def ask(self, question: str) -> Any:
-        return self.query_engine.query(question).response
+        print("question: ", question)
+        response = self.query_engine.query(question)
+        print("response type: ", type(response))
+        return response.__str__()
 
 
 class XPipeWikiRobotManager(Lifecycle):
@@ -61,7 +66,8 @@ class AzureXPipeWikiRobotManager(XPipeWikiRobotManager):
             service_context=self.service_context_manager.get_service_context(),
         )
         self.query_engine = index.as_query_engine(
-            service_context=self.service_context_manager.get_service_context()
+            service_context=self.service_context_manager.get_service_context(),
+            response_mode=ResponseMode.REFINE,
         )
 
     def do_stop(self) -> None:
