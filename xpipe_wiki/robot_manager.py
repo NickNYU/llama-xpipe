@@ -67,7 +67,7 @@ class AzureXPipeWikiRobotManager(XPipeWikiRobotManager):
         )
         self.query_engine = index.as_query_engine(
             service_context=self.service_context_manager.get_service_context(),
-            response_mode=ResponseMode.REFINE,
+            response_mode=ResponseMode.TREE_SUMMARIZE,
         )
 
     def do_stop(self) -> None:
